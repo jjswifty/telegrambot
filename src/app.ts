@@ -1,10 +1,11 @@
-import { weatherApi } from './api/api';
+import { sendMessageSafe } from './utils/messageUtils';
+import { weatherApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
 
 const token = process.env.token as string
 
-const bot = new TelegramBotAPI(token, { polling: true })
+export const bot = new TelegramBotAPI(token, { polling: true })
 
 bot.setMyCommands([
     { command: '/spotify', description: 'Получить мой плейлист музыки в спотифай.' },
@@ -24,22 +25,21 @@ const start = () => {
     //    await bot.sendMessage(chatId, msg)
     //}
 
-    //const forwardMessage = async msg => {
-    //    await bot.forwardMessage(chatId, fromId, true, messageId)
-    //}
+    
 
     const getWeather = async (latitude: number, longitude: number) => {
         return await weatherApi.getWeatherFromCoordinates(latitude, longitude)
     }
 
     bot.on('message', async msg => {
-        const msgText = msg.text
-        const chatId = msg.chat.id
-        const fromId = msg.from?.id
-        const messageId = msg.message_id
+        const msgText = msg.text as string
+        const chatId = msg.chat.id as number
+        const fromId = msg.from?.id as number
+        const messageId = msg.message_id as number
 
         console.log(msg)
         
+       
 
         if (msgText === '/start') {
             return bot.sendMessage(chatId, 'Я - очередной бот написанный на Node.js ради развлечения и отправки всякой фигни. Чекай мои команды)')
@@ -58,25 +58,23 @@ const start = () => {
         }
 
         if (msgText === '/imidiot') {
-            return await bot.sendMessage(chatId, texts[Math.ceil((Math.random() * texts.length + 1))])
+            return bot.sendMessage(chatId, texts[Math.ceil((Math.random() * texts.length + 1))])
             //return bot.send 
         }
-
+//${`ощущается как ${weatherNow.feels_like}°,`} 
         if (msg.location) {
             const { weatherNow, cityInfo, forecast } = await getWeather(msg.location.latitude, msg.location.longitude)
             return bot.sendMessage(chatId, 
             `
-                Температура сейчас - ${weatherNow.temp}°, ощущается как ${weatherNow.feels_like}°, 
+                Температура сейчас - ${weatherNow.temp}°, ${weatherNow.temp === weatherNow.feels_like ? '' : 'ощущается как ${weatherNow.feels_like}°,'}
                 погода - ${weatherNow.condition}, скорость ветра - ${weatherNow.wind_speed} м/c,
                 текущие дата и время: ${new Date().toLocaleString()}, твой часовой пояс - ${cityInfo.tzinfo.name}.
             `
             .replace(/\s+/g, ' ').trim())
         }
 
-        
-
-        return bot.sendMessage(chatId, 
-            Math.random() > 0.5 ? `Че ты за хрень высрал, ${msg.from?.first_name}? Я не понял. Список команд чекай, идиотина.`
+        return sendMessageSafe(chatId, messageId,
+            Math.random() > 0.5 ? `Че ты за хрень высрал, ${msg.from?.first_name}-чудик? Я не понял. Список команд чекай, идиотина.`
             : `Че несешь? Напиши что-то нормальное, чекни список команд.`, 
             { reply_to_message_id: messageId }
         )
