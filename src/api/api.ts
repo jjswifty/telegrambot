@@ -1,4 +1,4 @@
-const axios = require('axios')
+import axios from 'axios'
 require('dotenv').config();
 
 const weatherInstance = axios.create({
@@ -9,7 +9,7 @@ const weatherInstance = axios.create({
 });
 
 class WeatherAPI {
-    getWeatherFromCoordinates = async (latitude, longitude) => {
+    getWeatherFromCoordinates = async (latitude: number, longitude: number) => {
         try {
             const { data } = await weatherInstance.get(`forecast?lat=${latitude}&lon=${longitude}&lang=ru_RU&limit=1`)
 
@@ -24,4 +24,4 @@ class WeatherAPI {
     }
 }
 
-module.exports = new WeatherAPI()
+export const weatherApi = new WeatherAPI()
