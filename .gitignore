@@ -1,3 +1,3 @@
 .env
 /node_modules
-src/texts.ts
+src/data/texts.ts
