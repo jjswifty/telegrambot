@@ -15,17 +15,9 @@ bot.setMyCommands([
     { command: '/commands', description: 'сделать надо бля' },
 ])
 
+
+
 const start = () => {
-
-    //let chatId = 0
-    //let fromId = 0
-    //let messageId = 0
-
-    //const sendMessage = async msg => {
-    //    await bot.sendMessage(chatId, msg)
-    //}
-
-    
 
     const getWeather = async (latitude: number, longitude: number) => {
         return await weatherApi.getWeatherFromCoordinates(latitude, longitude)
@@ -38,8 +30,6 @@ const start = () => {
         const messageId = msg.message_id as number
 
         console.log(msg)
-        
-       
 
         if (msgText === '/start') {
             return bot.sendMessage(chatId, 'Я - очередной бот написанный на Node.js ради развлечения и отправки всякой фигни. Чекай мои команды)')
@@ -73,10 +63,10 @@ const start = () => {
             .replace(/\s+/g, ' ').trim())
         }
 
-        return sendMessageSafe(chatId, messageId,
-            Math.random() > 0.5 ? `Че ты за хрень высрал, ${msg.from?.first_name}-чудик? Я не понял. Список команд чекай, идиотина.`
-            : `Че несешь? Напиши что-то нормальное, чекни список команд.`, 
-            { reply_to_message_id: messageId }
+        return sendMessageSafe(Math.random() > 0.5 ? 
+            `Че ты за хрень высрал, ${msg.from?.first_name}-чудик? Я не понял. Список команд чекай, идиотина.`
+            : `Че несешь? Напиши что-то нормальное, чекни список команд.`
+            , { disable_notification: true  }
         )
     })
 }
