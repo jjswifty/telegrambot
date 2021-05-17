@@ -7,6 +7,9 @@ class GeocoderApi {
     geocodeByCityName = async (city: string) => {
         try {
             const { data } = await axios.get(encodeURI(`https://geocode-maps.yandex.ru/1.x/?apikey=${geocoderToken}&format=json&geocode=${city}`))
+
+            if (data.response.GeoObjectCollection.metaDataProperty.GeocoderResponseMetaData.found == 0) return false
+            
             const position = data.response.GeoObjectCollection.featureMember[0].GeoObject.Point.pos.split(' ')
             
             return {
@@ -22,6 +25,11 @@ class GeocoderApi {
         try {
             const { data } = await axios.get(encodeURI(`https://geocode-maps.yandex.ru/1.x/?apikey=${geocoderToken}&format=json&geocode=${longitude},${latitude}`))
             
+            if (!data.response.GeoObjectCollection.featureMember[0]) {
+                return {
+                    location: '*непонятно какой город*'
+                }
+            }
             return {
                 location: data.response.GeoObjectCollection.featureMember[0].GeoObject.description
             }
@@ -34,4 +42,3 @@ class GeocoderApi {
 export const geocoderApi = new GeocoderApi()
 const api = new GeocoderApi()
 
-api.geocodeByCoordinates(37.622513, 55.75322)

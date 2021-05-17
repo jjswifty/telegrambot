@@ -9,10 +9,10 @@ const token = process.env.token as string
 export const bot = new TelegramBotAPI(token, { polling: true })
 
 bot.setMyCommands([
-    { command: '/spotify', description: 'Получить мой плейлист музыки в спотифай.' },
     { command: '/start', description: 'Стартуем...' },
+    { command: '/commands', description: 'Что я могу.' },
     { command: '/weather', description: 'Узнать погоду по геолокации.' },
-    { command: '/commands', description: 'сделать надо' },
+    { command: '/spotify', description: 'Получить мой плейлист музыки в спотифай.' },
 ])
 
 const start = () => {
@@ -40,7 +40,8 @@ const start = () => {
         const fromId = msg.from?.id as number
         const messageId = msg.message_id as number
 
-        console.log(msg)
+
+        //console.log(msg)
 
         if (msgText === '/start') {
             return sendMessageSafe('Я - очередной бот написанный на Node.js ради развлечения и отправки всякой фигни. Чекай мои команды)')
@@ -51,7 +52,16 @@ const start = () => {
         }
 
         if (msgText === '/commands') {
-            return sendMessageSafe('потом')
+            return sendMessageSafe(
+                "🌕 /weather - узнать погоду в своем городе. Пример: /weather Москва \n" + 
+                "🎵 /spotify - получить мой плейлист в спотифай (если уж совсем нечего слушать) \n" +
+                "🔧 /commands - получить этот список команд. \n" +
+                "Так же можно просто отправить геолокацию (метку) и получить погоду по ней."
+            )
+        }
+
+        if (msgText === '/imidiot') {
+            return sendMessageSafe(texts[Math.ceil((Math.random() * texts.length + 1))])
         }
 
         if (msgText?.includes('/weather')) {
@@ -62,9 +72,15 @@ const start = () => {
             }
 
             if (splittedMessage.length > 1) {
-                const { latitude, longitude } = await geocoderApi.geocodeByCityName(splittedMessage[splittedMessage.length - 1])
+                const coordinates = await geocoderApi.geocodeByCityName(splittedMessage[splittedMessage.length - 1])
+                if (!coordinates) {
+                    return sendMessageSafe('Ты в каких-то ебенях, либо пишешь херню. Stop it. Get some help.')
+                }
+
+                const { latitude, longitude } = coordinates
                 const { weatherNow, cityInfo, forecast } = await getWeather(latitude, longitude)
                 const { location } = await getLocation(latitude, longitude)
+
                 return sendMessageSafe( 
                     "🏙️" + location + "\n" +
                     `
@@ -76,10 +92,6 @@ const start = () => {
                 )
             }
             return sendMessageSafe('Отправь мне свое местоположение (геолокацию), либо напиши /weather твой город.')
-        }
-
-        if (msgText === '/imidiot') {
-            return sendMessageSafe(texts[Math.ceil((Math.random() * texts.length + 1))])
         }
 
         if (msg.location) {
