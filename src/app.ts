@@ -1,5 +1,5 @@
 import { sendMessageSafe } from './utils/messageUtils';
-import { weatherApi } from './api';
+import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
 import { store } from './store';
@@ -12,7 +12,6 @@ bot.setMyCommands([
     { command: '/spotify', description: 'Получить мой плейлист музыки в спотифай.' },
     { command: '/start', description: 'Стартуем...' },
     { command: '/weather', description: 'Узнать погоду по геолокации.' },
-    { command: '/imidiot', description: 'Секретная команда для идиотов.' },
     { command: '/commands', description: 'сделать надо' },
 ])
 
@@ -20,6 +19,10 @@ const start = () => {
 
     const getWeather = async (latitude: number, longitude: number) => {
         return await weatherApi.getWeatherFromCoordinates(latitude, longitude)
+    }
+
+    const getLocation = async (latitude: number, longitude: number) => {
+        return await geocoderApi.geocodeByCoordinates(latitude, longitude)
     }
 
     bot.on('message', async msg => {
@@ -51,8 +54,28 @@ const start = () => {
             return sendMessageSafe('потом')
         }
 
-        if (msgText === '/weather') {
-            return sendMessageSafe('Отправь мне свое местоположение (геолокацию).')
+        if (msgText?.includes('/weather')) {
+            const splittedMessage = msgText.split(' ')
+            
+            if (splittedMessage.length > 2) {
+                return sendMessageSafe('Напиши ровно 1 слово после команды. Пример: /weather Москва')
+            }
+
+            if (splittedMessage.length > 1) {
+                const { latitude, longitude } = await geocoderApi.geocodeByCityName(splittedMessage[splittedMessage.length - 1])
+                const { weatherNow, cityInfo, forecast } = await getWeather(latitude, longitude)
+                const { location } = await getLocation(latitude, longitude)
+                return sendMessageSafe( 
+                    "🏙️" + location + "\n" +
+                    `
+                        Температура сейчас - ${weatherNow.temp}°, ${weatherNow.temp === weatherNow.feels_like ? '' : `ощущается как ${weatherNow.feels_like}°,`}
+                        погода - ${weatherNow.condition}, скорость ветра - ${weatherNow.wind_speed} м/c,
+                        текущие дата и время: ${new Date().toLocaleString()}, твой часовой пояс - ${cityInfo.tzinfo.name}.
+                    `
+                    .replace(/\s+/g, ' ').trim()
+                )
+            }
+            return sendMessageSafe('Отправь мне свое местоположение (геолокацию), либо напиши /weather твой город.')
         }
 
         if (msgText === '/imidiot') {
@@ -61,7 +84,9 @@ const start = () => {
 
         if (msg.location) {
             const { weatherNow, cityInfo, forecast } = await getWeather(msg.location.latitude, msg.location.longitude)
+            const { location } = await getLocation(msg.location.latitude, msg.location.longitude)
             return sendMessageSafe( 
+            "🏙️" + location + "\n" +
             `
                 Температура сейчас - ${weatherNow.temp}°, ${weatherNow.temp === weatherNow.feels_like ? '' : `ощущается как ${weatherNow.feels_like}°,`}
                 погода - ${weatherNow.condition}, скорость ветра - ${weatherNow.wind_speed} м/c,
@@ -73,7 +98,7 @@ const start = () => {
         return sendMessageSafe(Math.random() > 0.5 ? 
             `Че за хрень, ${msg.from?.first_name} Я не понял. Список команд чекай.`
             : `Че несешь? Напиши что-то нормальное, чекни список команд.`
-            , { disable_notification: true  }
+            , { disable_notification: true }
         )
     })
 }

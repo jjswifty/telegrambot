@@ -1,5 +1,7 @@
-import { weatherApi } from './api';
+import { geocoderApi } from './geocoderApi';
+import { weatherApi } from './weatherApi';
 
 export {
-    weatherApi
+    weatherApi,
+    geocoderApi
 }
