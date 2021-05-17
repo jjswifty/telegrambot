@@ -7,7 +7,7 @@ export type StoreEvents = ChatInfoEvents //&
 
 const store = createStoreon<StoreState, StoreEvents>([chatInfoModule]);
 
-(window as any).store = store
+//3(window as any).store = store
 
 export {
     chatInfoModule,

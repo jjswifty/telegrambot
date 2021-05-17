@@ -2,21 +2,31 @@ import { StoreonModule } from 'storeon'
 import { store } from './index'
 
 export type ChatInfoState = {
-    chatId: number | null
+    chatId: number | string,
+    fromId: number | string,
+    messageId: number | string,
 }
 
 export type ChatInfoEvents = {
-    'chatInfo/set/chatInfo': number 
+    'chatInfo/set/chatInfo': {
+        chatId: number | string,
+        fromId: number | string,
+        messageId: number | string,
+    }
 }
 
 export const chatInfoModule: StoreonModule<ChatInfoState, ChatInfoEvents> = store => {
 
     store.on('@init', () => ({
-        chatId: null
+        chatId: '', 
+        fromId: '',
+        messageId: ''
     }))
 
     store.on('chatInfo/set/chatInfo', (state, event) => ({
-        chatId: event
+        chatId: event.chatId,
+        fromId: event.fromId,
+        messageId: event.messageId
     }))
 
 }
