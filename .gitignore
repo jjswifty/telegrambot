@@ -1,4 +1,4 @@
-.env
 /node_modules
-texts.ts
+.env
+/src/data/texts.ts
 /dist

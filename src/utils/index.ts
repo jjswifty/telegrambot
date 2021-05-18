@@ -1,6 +1,7 @@
-import { sendMessageSafe, getPreparedWeatherInfo } from './messageUtils'
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice } from './messageUtils'
 
 export {
     sendMessageSafe,
-    getPreparedWeatherInfo
+    getPreparedWeatherInfo,
+    sendDice
 }

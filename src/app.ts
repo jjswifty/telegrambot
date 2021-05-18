@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo } from './utils/messageUtils';
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice } from './utils/messageUtils';
 import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
@@ -12,9 +12,12 @@ bot.setMyCommands([
     { command: '/start', description: 'Стартуем...' },
     { command: '/commands', description: 'Что я могу.' },
     { command: '/weather', description: 'Узнать погоду по геолокации.' },
+    { command: '/roll', description: 'Подбросить кубик.' }
 ])
 
 const start = () => {
+
+    bot.on('polling_error', error => console.log(error))
 
     const getWeather = async (latitude: number, longitude: number) => {
         return await weatherApi.getWeatherFromCoordinates(latitude, longitude)
@@ -23,6 +26,13 @@ const start = () => {
     const getLocation = async (latitude: number, longitude: number) => {
         return await geocoderApi.geocodeByCoordinates(latitude, longitude)
     }
+
+    bot.on('callback_query', async msg => {
+        if (msg.data === 'reroll_dice') {
+            sendDice()
+        }
+    })
+    
 
     bot.on('message', async msg => {
 
@@ -35,10 +45,11 @@ const start = () => {
             messageId: msg.message_id as number
         })
 
+        const chatId = store.get().chatId
         const msgText = msg.text as string
         const fromId = msg.from?.id as number
+        const userFirstName = msg.from?.first_name
         const messageId = msg.message_id as number
-        
 
         if (msgText === '/start') {
             return sendMessageSafe('Я - очередной бот написанный на Node.js ради развлечения и отправки всякой фигни. Чекай мои команды)')
@@ -106,6 +117,10 @@ const start = () => {
             })
 
             return sendMessageSafe(getPreparedWeatherInfo())
+        }
+
+        if (msgText === '/roll') {
+            return sendDice()
         }
 
         return sendMessageSafe(Math.random() > 0.5 ?

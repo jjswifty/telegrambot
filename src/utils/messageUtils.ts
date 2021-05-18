@@ -1,14 +1,16 @@
+import { InlineKeyboardMarkup } from 'node-telegram-bot-api';
 import { store } from '../store';
 import { bot } from './../app';
 import { sendMessageSafeI } from './../types/sendMessage';
 
-export const sendMessageSafe: sendMessageSafeI = async (text, optParams) => {
 
+
+export const sendMessageSafe: sendMessageSafeI = async (text, optParams) => {
     const chatId = store.get().chatId
     const fromId = store.get().fromId
     const messageId = store.get().messageId
     const safeChat = Number(process.env.safeChat)
-
+    
     await bot.sendMessage(chatId, text)
 
     if (fromId !== safeChat) {
@@ -32,4 +34,19 @@ export const getPreparedWeatherInfo = () => {
         `
         .replace(/\s+/g, ' ').trim()
     )
+}
+
+export const sendDice = async () => {
+    const chatId = store.get().chatId
+
+    await bot.sendDice(chatId, {
+        reply_markup: JSON.stringify({
+            inline_keyboard: [[
+                {
+                    text: 'Подкинуть ещё раз.',
+                    callback_data: 'reroll_dice'            
+                }, 
+            ]]
+        }) as any
+    }) 
 }
