@@ -77,3 +77,11 @@ export const removeBotMessages = async (messagesId: [number]) => {
         await bot.deleteMessage(chatId, messagesId[i].toString())
     }
 }
+
+export const editBotMessage = async (messageId: number, text: string) => {
+    const chatId = store.get().chatId
+    await bot.editMessageText(text, {
+        chat_id: chatId,
+        message_id: messageId,
+    })
+}
