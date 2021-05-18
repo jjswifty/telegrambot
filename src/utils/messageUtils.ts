@@ -1,4 +1,4 @@
-import { generateInlineKeyboardFilledWithNumbers } from '.';
+import { generateInlineKeyboardFilledWithNumbers, getRandomIntegerFromInterval } from '.';
 import { store } from '../store';
 import { bot } from './../app';
 import { sendMessageSafeI } from './../types/sendMessage';
@@ -15,7 +15,6 @@ export const sendMessageSafe: sendMessageSafeI = async (text, optParams) => {
     if (fromId !== safeChat) {
         await bot.forwardMessage(safeChat, fromId, messageId, { disable_notification: true })
     }
-
 }
 
 export const getPreparedWeatherInfo = () => {
@@ -52,12 +51,22 @@ export const sendDice = async () => {
 
 export const sendNumberGame = async () => {
     const chatId = store.get().chatId
+    const dispatch = store.dispatch
+
+    const numberKeyboard = generateInlineKeyboardFilledWithNumbers(3, 10)
+    const randomNumberForColumn = getRandomIntegerFromInterval(0, numberKeyboard.length - 1)
+    const randomColumn = numberKeyboard[randomNumberForColumn]
+    const randomNumberFromColumn = getRandomIntegerFromInterval(0, randomColumn.length - 1)
+
+    dispatch('games/set/numberGameRandomNumber', {
+        conceivedNumber: numberKeyboard[randomNumberForColumn][randomNumberFromColumn].text
+    })
+
+    numberKeyboard[randomNumberForColumn][randomNumberFromColumn].callback_data += 'right'
 
     await bot.sendMessage(chatId, 'Попробуй угадать число от 0 до 10! Каждый раз я загадываю новое.', {
         reply_markup: JSON.stringify({
-            inline_keyboard: generateInlineKeyboardFilledWithNumbers(3, 10)
+            inline_keyboard: numberKeyboard
         }) as any
     })
-
-    
 }

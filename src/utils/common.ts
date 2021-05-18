@@ -10,9 +10,14 @@ export const generateInlineKeyboardFilledWithNumbers = (columns: number, buttons
         }
         columnArr.push({
             text: num,
-            callback_data: num,
+            callback_data: 'NumberGame' + num,
         })
     }
     columnsArr.push(columnArr)
     return columnsArr
+}
+
+export const getRandomIntegerFromInterval = (min: number, max: number) => {
+    let rand = min - 0.5 + Math.random() * (max - min + 1);
+    return Math.round(rand);
 }

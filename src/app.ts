@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame } from './utils/messageUtils';
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame } from './utils';
 import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
@@ -29,11 +29,22 @@ const start = () => {
     }
 
     bot.on('callback_query', async msg => {
+        const dispatch = store.dispatch
+
         if (msg.data === 'reroll_dice') {
+            const conceivedNumber = Math.floor(Math.random() * 10)
             sendDice()
         }
 
-        
+        if (msg.data?.includes('NumberGame')) {
+            const isNumberRight = !!msg.data.includes('right')
+            
+            if (isNumberRight) {
+                return sendMessageSafe('✅Ты угадал!✅')
+            }
+            return sendMessageSafe(`❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`)
+        }
+
     })
     
 
