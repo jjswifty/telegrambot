@@ -1,7 +1,10 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice } from './messageUtils'
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame } from './messageUtils'
+import { generateInlineKeyboardFilledWithNumbers } from './common'
 
 export {
     sendMessageSafe,
     getPreparedWeatherInfo,
-    sendDice
+    sendDice,
+    sendNumberGame,
+    generateInlineKeyboardFilledWithNumbers,
 }

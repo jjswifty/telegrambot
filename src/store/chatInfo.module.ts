@@ -19,13 +19,13 @@ export const chatInfoModule: StoreonModule<ChatInfoState, ChatInfoEvents> = stor
     store.on('@init', () => ({
         chatId: '', 
         fromId: '',
-        messageId: ''
+        messageId: '',
     }))
 
     store.on('chatInfo/set/chatInfo', (state, event) => ({
         chatId: event.chatId,
         fromId: event.fromId,
-        messageId: event.messageId
+        messageId: event.messageId,
     }))
 
 }

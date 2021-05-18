@@ -1,4 +1,4 @@
-import { InlineKeyboardMarkup, SendMessageOptions } from 'node-telegram-bot-api';
+import { generateInlineKeyboardFilledWithNumbers } from '.';
 import { store } from '../store';
 import { bot } from './../app';
 import { sendMessageSafeI } from './../types/sendMessage';
@@ -48,4 +48,16 @@ export const sendDice = async () => {
             ]]
         }) as any
     }) 
+}
+
+export const sendNumberGame = async () => {
+    const chatId = store.get().chatId
+
+    await bot.sendMessage(chatId, 'Попробуй угадать число от 0 до 10! Каждый раз я загадываю новое.', {
+        reply_markup: JSON.stringify({
+            inline_keyboard: generateInlineKeyboardFilledWithNumbers(3, 10)
+        }) as any
+    })
+
+    
 }

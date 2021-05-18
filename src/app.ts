@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice } from './utils/messageUtils';
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame } from './utils/messageUtils';
 import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
@@ -12,7 +12,8 @@ bot.setMyCommands([
     { command: '/start', description: 'Стартуем...' },
     { command: '/commands', description: 'Что я могу.' },
     { command: '/weather', description: 'Узнать погоду по геолокации.' },
-    { command: '/roll', description: 'Подбросить кубик.' }
+    { command: '/roll', description: 'Подбросить кубик.' },
+    { command: '/numbergame', description: 'Отгадай число от 0 до 9.' }
 ])
 
 const start = () => {
@@ -31,6 +32,8 @@ const start = () => {
         if (msg.data === 'reroll_dice') {
             sendDice()
         }
+
+        
     })
     
 
@@ -121,6 +124,10 @@ const start = () => {
 
         if (msgText === '/roll') {
             return sendDice()
+        }
+
+        if (msgText === '/numbergame') {
+            return sendNumberGame()
         }
 
         return sendMessageSafe(Math.random() > 0.5 ?
