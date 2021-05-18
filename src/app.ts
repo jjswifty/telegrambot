@@ -72,6 +72,8 @@ const start = () => {
         if (msgText === '/commands') {
             return sendMessageSafe(
                 "🌕 /weather - узнать погоду в своем городе. Пример: /weather Москва \n" +
+                "🔧 /roll - подбросить кубик. \n" +
+                "🔧 /numbergame - отгадай число от 0 до 9. \n" +
                 "🔧 /commands - получить этот список команд. \n" +
                 "Так же можно просто отправить геолокацию (метку) и получить погоду по ней."
             )
@@ -92,7 +94,7 @@ const start = () => {
                 const coordinates = await geocoderApi.geocodeByCityName(splittedMessage[splittedMessage.length - 1])
 
                 if (!coordinates) {
-                    return sendMessageSafe('Ты в каких-то ебенях, либо пишешь херню. Stop it. Get some help.')
+                    return sendMessageSafe('Ты в каких-то ебенях, либо пишешь херню. Пиши по примеру - пример: /weather Москва')
                 }
 
                 const { latitude, longitude } = coordinates

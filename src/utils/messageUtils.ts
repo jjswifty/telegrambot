@@ -53,7 +53,7 @@ export const sendNumberGame = async () => {
     const chatId = store.get().chatId
     const dispatch = store.dispatch
 
-    const numberKeyboard = generateInlineKeyboardFilledWithNumbers(3, 10)
+    const numberKeyboard = generateInlineKeyboardFilledWithNumbers(3, 10, 'NumberGame')
     const randomNumberForColumn = getRandomIntegerFromInterval(0, numberKeyboard.length - 1)
     const randomColumn = numberKeyboard[randomNumberForColumn]
     const randomNumberFromColumn = getRandomIntegerFromInterval(0, randomColumn.length - 1)
@@ -69,4 +69,11 @@ export const sendNumberGame = async () => {
             inline_keyboard: numberKeyboard
         }) as any
     })
+}
+
+export const removeBotMessages = async (messagesId: [number]) => {
+    const chatId = store.get().chatId
+    for (let i = 0; i < messagesId.length - 1; i++) {
+        await bot.deleteMessage(chatId, messagesId[i].toString())
+    }
 }

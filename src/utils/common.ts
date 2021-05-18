@@ -1,4 +1,4 @@
-export const generateInlineKeyboardFilledWithNumbers = (columns: number, buttons: number) => {
+export const generateInlineKeyboardFilledWithNumbers = (columns: number, buttons: number, dataPrefix: string = '') => {
 
     const columnsArr: any = []
     let columnArr: {}[] = []
@@ -10,7 +10,7 @@ export const generateInlineKeyboardFilledWithNumbers = (columns: number, buttons
         }
         columnArr.push({
             text: num,
-            callback_data: 'NumberGame' + num,
+            callback_data: dataPrefix + num,
         })
     }
     columnsArr.push(columnArr)
