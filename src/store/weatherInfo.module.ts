@@ -7,21 +7,21 @@ export type weatherInfoState = {
         longitude: number,
     }
     weather: {
-        temperature: number,
+        temp: number,
         feels_like: number,
-        overcast: string,
+        condition: string,
         wind_speed: number,
-        timeZone: string,
+        tzinfo: string,
     }
 }
 
 export type weatherInfoEvents = {
     'weatherInfo/set/weather': {
-        temperature: number,
+        temp: number,
         feels_like: number,
-        overcast: string,
+        condition: string,
         wind_speed: number,
-        timeZone: string,
+        tzinfo: string,
     },
     'weatherInfo/set/userLocation': {
         location: string,
@@ -40,10 +40,10 @@ export const weatherInfoModule: StoreonModule<weatherInfoState, weatherInfoEvent
         },
         weather: {
             feels_like: 0,
-            temperature: 0,
-            overcast: '',
+            temp: 0,
+            condition: '',
             wind_speed: 0,
-            timeZone: '',
+            tzinfo: '',
         },
     }))
 
