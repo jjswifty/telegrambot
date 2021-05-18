@@ -57,9 +57,10 @@ export const sendNumberGame = async () => {
     const randomNumberForColumn = getRandomIntegerFromInterval(0, numberKeyboard.length - 1)
     const randomColumn = numberKeyboard[randomNumberForColumn]
     const randomNumberFromColumn = getRandomIntegerFromInterval(0, randomColumn.length - 1)
+    const conceivedNumber = numberKeyboard[randomNumberForColumn][randomNumberFromColumn].text
 
     dispatch('games/set/numberGameRandomNumber', {
-        conceivedNumber: numberKeyboard[randomNumberForColumn][randomNumberFromColumn].text
+        conceivedNumber
     })
 
     numberKeyboard[randomNumberForColumn][randomNumberFromColumn].callback_data += 'right'
