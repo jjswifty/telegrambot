@@ -126,7 +126,7 @@ const start = () => {
         return sendMessageSafe(Math.random() > 0.5 ?
             `Че за хрень, ${msg.from?.first_name}. Я не понял. Список команд чекай.`
             : `Че несешь, ${msg.from?.first_name}? Напиши что-то нормальное, чекни список команд.`
-            , { disable_notification: true }
+            , { disable_notification: true, reply_to_message_id: messageId }
         )
     })
 }
