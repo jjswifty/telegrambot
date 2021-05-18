@@ -1,5 +1,4 @@
 import { StoreonModule } from 'storeon'
-import { store } from './index'
 
 export type ChatInfoState = {
     chatId: number | string,
