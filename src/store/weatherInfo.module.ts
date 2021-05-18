@@ -48,15 +48,11 @@ export const weatherInfoModule: StoreonModule<weatherInfoState, weatherInfoEvent
     }))
 
     store.on('weatherInfo/set/weather', (state, event) => ({
-        weather: {
-            ...event
-        }
+        weather: { ...event }
     }))
 
     store.on('weatherInfo/set/userLocation', (state, event) => ({
-        userLocation: {
-            ...event
-        }
+        userLocation: { ...event }
     }))
 
 }

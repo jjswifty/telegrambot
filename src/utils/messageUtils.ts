@@ -16,3 +16,20 @@ export const sendMessageSafe: sendMessageSafeI = async (text, optParams) => {
     }
 
 }
+
+export const getPreparedWeatherInfo = () => {
+
+    const weatherNow = store.get().weather
+    const location = store.get().userLocation.location
+
+    return (!location || !weatherNow) ? 'Не смог определить температуру/местоположение. Проверь данные.' 
+    : (
+        "🏙️" + location + "\n" +
+        `
+            Температура сейчас - ${weatherNow.temp}°, ${weatherNow.temp === weatherNow.feels_like ? '' : `ощущается как ${weatherNow.feels_like}°,`}
+            погода - ${weatherNow.condition}, скорость ветра - ${weatherNow.wind_speed} м/c,
+            текущие дата и время: ${new Date().toLocaleString()}, твой часовой пояс - ${weatherNow.tzinfo}.
+        `
+        .replace(/\s+/g, ' ').trim()
+    )
+}
