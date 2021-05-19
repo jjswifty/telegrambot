@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame } from './messageUtils'
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame, removeMessages, editBotMessage } from './messageUtils'
 import { generateInlineKeyboardFilledWithNumbers, getRandomIntegerFromInterval } from './common'
 
 export {
@@ -7,5 +7,7 @@ export {
     sendDice,
     sendNumberGame,
     generateInlineKeyboardFilledWithNumbers,
-    getRandomIntegerFromInterval
+    getRandomIntegerFromInterval,
+    removeMessages,
+    editBotMessage,
 }

@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame } from './utils';
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame, generateInlineKeyboardFilledWithNumbers, editBotMessage, removeMessages } from './utils';
 import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
@@ -9,7 +9,6 @@ const token = process.env.token as string
 export const bot = new TelegramBotAPI(token, { polling: true })
 
 bot.setMyCommands([
-    { command: '/start', description: 'Стартуем...' },
     { command: '/commands', description: 'Что я могу.' },
     { command: '/weather', description: 'Узнать погоду по геолокации.' },
     { command: '/roll', description: 'Подбросить кубик.' },
@@ -29,20 +28,45 @@ const start = () => {
     }
 
     bot.on('callback_query', async msg => {
+
+        const messageId = msg.message?.message_id
+        if (!messageId || !msg.message?.from?.id) return
+
         const dispatch = store.dispatch
+        dispatch('chatInfo/set/chatInfo', {
+            chatId: msg.message?.chat.id,
+            fromId: msg.message?.from?.id,
+            messageId
+        })
+        console.log(msg) // здесь диспатчить айди
 
         if (msg.data === 'reroll_dice') {
-            const conceivedNumber = Math.floor(Math.random() * 10)
-            sendDice()
+            return sendDice()
         }
 
-        if (msg.data?.includes('NumberGame')) {
+        if (msg.data?.match(/^ReplayNumberGame/)) {
+            removeMessages([messageId, messageId - 2])
+            return sendNumberGame()
+        }
+
+        if (msg.data?.match(/^NumberGame/)) {
             const isNumberRight = !!msg.data.includes('right')
-            
+            const replayButton = JSON.stringify({
+                inline_keyboard: [[
+                    {
+                        text: 'Еще раз?',
+                        callback_data: 'ReplayNumberGame'
+                    }
+                ]]
+            }) as any
+
+            removeMessages([messageId])
+            // Удаляем сообщение, высвечиваем новое с результатом игры, и кнопкой Еще раз?, при нажатии на которую удалятся сообщение с предыдущей игрой
+
             if (isNumberRight) {
-                return sendMessageSafe('✅Ты угадал!✅')
+                return sendMessageSafe(`✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, { reply_markup: replayButton })
             }
-            return sendMessageSafe(`❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`)
+            return sendMessageSafe(`❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`, { reply_markup: replayButton })
         }
 
     })
@@ -53,17 +77,17 @@ const start = () => {
         const dispatch = store.dispatch
         //const chatId = store.get().chatId
 
+        const chatId = store.get().chatId as number
+        const msgText = msg.text as string
+        const fromId = msg.from?.id as number
+        const userFirstName = msg.from?.first_name
+        const messageId = msg.message_id as number
+
         dispatch('chatInfo/set/chatInfo', {
             chatId: msg.chat.id as number,
             fromId: msg.from?.id as number,
             messageId: msg.message_id as number
         })
-
-        const chatId = store.get().chatId
-        const msgText = msg.text as string
-        const fromId = msg.from?.id as number
-        const userFirstName = msg.from?.first_name
-        const messageId = msg.message_id as number
 
         if (msgText === '/start') {
             return sendMessageSafe('Я - очередной бот написанный на Node.js ради развлечения и отправки всякой фигни. Чекай мои команды)')
@@ -74,7 +98,6 @@ const start = () => {
                 "🌕 /weather - узнать погоду в своем городе. Пример: /weather Москва \n" +
                 "🔧 /roll - подбросить кубик. \n" +
                 "🔧 /numbergame - отгадай число от 0 до 9. \n" +
-                "🔧 /commands - получить этот список команд. \n" +
                 "Так же можно просто отправить геолокацию (метку) и получить погоду по ней."
             )
         }

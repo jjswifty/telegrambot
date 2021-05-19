@@ -1,10 +1,12 @@
+import { InlineKeyboardMarkup } from 'node-telegram-bot-api';
 import { generateInlineKeyboardFilledWithNumbers, getRandomIntegerFromInterval } from '.';
 import { store } from '../store';
 import { bot } from './../app';
 import { sendMessageSafeI } from './../types/sendMessage';
 
-export const sendMessageSafe: sendMessageSafeI = async (text, optParams) => {
+// Можно переделать в класс для избавления от дублирования кода. Даже нужно!
 
+export const sendMessageSafe: sendMessageSafeI = async (text, optParams) => {
     const chatId = store.get().chatId
     const fromId = store.get().fromId
     const messageId = store.get().messageId
@@ -65,24 +67,32 @@ export const sendNumberGame = async () => {
 
     numberKeyboard[randomNumberForColumn][randomNumberFromColumn].callback_data += 'right'
 
-    await bot.sendMessage(chatId, 'Попробуй угадать число от 0 до 10! Каждый раз я загадываю новое.', {
+    sendMessageSafe('Попробуй угадать число от 0 до 10! Каждый раз я загадываю новое.', {
         reply_markup: JSON.stringify({
             inline_keyboard: numberKeyboard
         }) as any
     })
 }
 
-export const removeBotMessages = async (messagesId: [number]) => {
+export const removeMessages = async (messagesId: number[]) => {
     const chatId = store.get().chatId
+    if (messagesId.length === 1) return bot.deleteMessage(chatId, messagesId[0].toString())
+    console.log(messagesId, 'from util')
     for (let i = 0; i < messagesId.length - 1; i++) {
         await bot.deleteMessage(chatId, messagesId[i].toString())
     }
 }
 
-export const editBotMessage = async (messageId: number, text: string) => {
+export const editBotMessage = async (messageId: number, text: string, reply_markup: InlineKeyboardMarkup | null = null) => {
     const chatId = store.get().chatId
     await bot.editMessageText(text, {
         chat_id: chatId,
         message_id: messageId,
     })
+    if (reply_markup) {
+        await bot.editMessageReplyMarkup(reply_markup, {
+            chat_id: chatId,
+            message_id: messageId
+        })
+    }
 }
