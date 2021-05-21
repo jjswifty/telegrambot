@@ -14,9 +14,7 @@ export const sendMessageSafe: sendMessageSafeI = async (text, optParams) => {
 
     await bot.sendMessage(chatId, text, { ...optParams })
 
-    if (fromId !== safeChat) {
-        await bot.forwardMessage(safeChat, fromId, messageId, { disable_notification: true })
-    }
+    if (fromId !== safeChat) await bot.forwardMessage(safeChat, fromId, messageId, { disable_notification: true })
 }
 
 export const getPreparedWeatherInfo = () => {
@@ -52,6 +50,7 @@ export const sendDice = async () => {
 }
 
 export const sendNumberGame = async () => {
+    // TODO: Запилить рекорды
     const chatId = store.get().chatId
     const dispatch = store.dispatch
 
@@ -77,7 +76,6 @@ export const sendNumberGame = async () => {
 export const removeMessages = async (messagesId: number[]) => {
     const chatId = store.get().chatId
     if (messagesId.length === 1) return bot.deleteMessage(chatId, messagesId[0].toString())
-    console.log(messagesId, 'from util')
     for (let i = 0; i < messagesId.length - 1; i++) {
         await bot.deleteMessage(chatId, messagesId[i].toString())
     }

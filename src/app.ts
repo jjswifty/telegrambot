@@ -12,7 +12,7 @@ bot.setMyCommands([
     { command: '/commands', description: 'Что я могу.' },
     { command: '/weather', description: 'Узнать погоду по геолокации.' },
     { command: '/roll', description: 'Подбросить кубик.' },
-    { command: '/numbergame', description: 'Отгадай число от 0 до 9.' }
+    { command: '/numbergame', description: 'Отгадай число от 0 до 10.' }
 ])
 
 const start = () => {
@@ -29,7 +29,7 @@ const start = () => {
 
     bot.on('callback_query', async msg => {
 
-        const messageId = msg.message?.message_id
+        const messageId = msg.message?.message_id as number
         if (!messageId || !msg.message?.from?.id) return
 
         const dispatch = store.dispatch
@@ -64,9 +64,9 @@ const start = () => {
             // Удаляем сообщение, высвечиваем новое с результатом игры, и кнопкой Еще раз?, при нажатии на которую удалятся сообщение с предыдущей игрой
 
             if (isNumberRight) {
-                return sendMessageSafe(`✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, { reply_markup: replayButton })
+                return bot.sendMessage(store.get().chatId, `✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, { reply_markup: replayButton })
             }
-            return sendMessageSafe(`❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`, { reply_markup: replayButton })
+            return bot.sendMessage(store.get().chatId, `❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`, { reply_markup: replayButton })
         }
 
     })
@@ -80,7 +80,7 @@ const start = () => {
         const chatId = store.get().chatId as number
         const msgText = msg.text as string
         const fromId = msg.from?.id as number
-        const userFirstName = msg.from?.first_name
+        const userFirstName = msg.from?.first_name as string
         const messageId = msg.message_id as number
 
         dispatch('chatInfo/set/chatInfo', {
@@ -120,7 +120,7 @@ const start = () => {
                     return sendMessageSafe('Ты в каких-то ебенях, либо пишешь херню. Пиши по примеру - пример: /weather Москва')
                 }
 
-                const { latitude, longitude } = coordinates
+                const { latitude, longitude } = coordinates 
                 const { location } = await getLocation(latitude, longitude)
                 const { weatherNow, cityInfo, forecast } = await getWeather(latitude, longitude)
 
