@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice, getNumberGame, generateInlineKeyboardFilledWithNumbers, editMessage, removeMessages, getInlineButton } from './utils';
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, getNumberGame, generateInlineKeyboardFilledWithNumbers, editMessage, removeMessages, getInlineButton, getLocation, getWeather } from './utils';
 import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
@@ -18,14 +18,6 @@ bot.setMyCommands([
 const start = () => {
 
     bot.on('polling_error', error => console.log(error))
-
-    const getWeather = async (latitude: number, longitude: number) => {
-        return await weatherApi.getWeatherFromCoordinates(latitude, longitude)
-    }
-
-    const getLocation = async (latitude: number, longitude: number) => {
-        return await geocoderApi.geocodeByCoordinates(latitude, longitude)
-    }
 
     bot.on('callback_query', async msg => {
 

@@ -1,5 +1,5 @@
 import { sendMessageSafe, getPreparedWeatherInfo, sendDice, getNumberGame, removeMessages, editMessage } from './messageUtils'
-import { getRandomIntegerFromInterval } from './common'
+import { getRandomIntegerFromInterval, getWeather, getLocation } from './common'
 import { generateInlineKeyboardFilledWithNumbers, getInlineButton } from './markupUtils'
 
 export {
@@ -12,4 +12,6 @@ export {
     removeMessages,
     editMessage,
     getInlineButton,
+    getWeather,
+    getLocation,
 }
