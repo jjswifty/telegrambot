@@ -76,18 +76,18 @@ const start = () => {
 
         const dispatch = store.dispatch
         //const chatId = store.get().chatId
-
-        const chatId = store.get().chatId as number
-        const msgText = msg.text as string
-        const fromId = msg.from?.id as number
-        const userFirstName = msg.from?.first_name as string
-        const messageId = msg.message_id as number
-
         dispatch('chatInfo/set/chatInfo', {
             chatId: msg.chat.id as number,
             fromId: msg.from?.id as number,
             messageId: msg.message_id as number
         })
+        const chatId = msg.chat.id as number
+        const msgText = msg.text as string
+        const fromId = msg.from?.id as number
+        const userFirstName = msg.from?.first_name as string
+        const messageId = msg.message_id as number
+
+        
 
         if (msgText === '/start') {
             return sendMessageSafe('Я - очередной бот написанный на Node.js ради развлечения и отправки всякой фигни. Чекай мои команды)')
@@ -167,8 +167,8 @@ const start = () => {
         }
 
         return sendMessageSafe(Math.random() > 0.5 ?
-            `Че за хрень, ${msg.from?.first_name}. Я не понял. Список команд чекай.`
-            : `Че несешь, ${msg.from?.first_name}? Напиши что-то нормальное, чекни список команд.`
+            `Че за хрень, ${userFirstName}. Я не понял. Список команд чекай.`
+            : `Че несешь, ${userFirstName}? Напиши что-то нормальное, чекни список команд.`
             , { disable_notification: true, reply_to_message_id: messageId }
         )
     })
