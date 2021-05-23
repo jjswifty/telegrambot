@@ -82,7 +82,7 @@ const start = () => {
         const fromId = msg.from?.id as number
         const userFirstName = msg.from?.first_name as string
         const messageId = msg.message_id as number
-        //const chatId = store.get().chatId
+
         dispatch('chatInfo/set/chatInfo', { chatId, fromId, messageId, })
         
         if (msgText === '/start') {
