@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame, generateInlineKeyboardFilledWithNumbers, editBotMessage, removeMessages } from './utils';
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame, generateInlineKeyboardFilledWithNumbers, editMessage, removeMessages } from './utils';
 import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
@@ -45,7 +45,7 @@ const start = () => {
         }
 
         if (msg.data?.match(/^ReplayNumberGame/)) {
-            removeMessages([messageId, messageId - 2])
+            //removeMessages([messageId, messageId - 2])
             return sendNumberGame()
         }
 
@@ -59,14 +59,16 @@ const start = () => {
                     }
                 ]]
             }) as any
-
-            removeMessages([messageId])
-            // Удаляем сообщение, высвечиваем новое с результатом игры, и кнопкой Еще раз?, при нажатии на которую удалятся сообщение с предыдущей игрой
+            //
+            // - removeMessages([messageId])
+            // + Редактируем текущее сообщение, изменяя markup на кнопку Еще раз, при нажатии на которую появится markup, и так по кругу
+            // - Удаляем сообщение, высвечиваем новое с результатом игры, и кнопкой Еще раз?, при нажатии на которую удалятся сообщение с предыдущей игрой
 
             if (isNumberRight) {
-                return bot.sendMessage(store.get().chatId, `✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, { reply_markup: replayButton })
+                // - return bot.sendMessage(store.get().chatId, `✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, { reply_markup: replayButton })
+                return editMessage(messageId, `✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, replayButton)
             }
-            return bot.sendMessage(store.get().chatId, `❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`, { reply_markup: replayButton })
+            return editMessage(messageId, `❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`, replayButton)
         }
 
     })
@@ -75,20 +77,14 @@ const start = () => {
     bot.on('message', async msg => {
 
         const dispatch = store.dispatch
-        //const chatId = store.get().chatId
-        dispatch('chatInfo/set/chatInfo', {
-            chatId: msg.chat.id as number,
-            fromId: msg.from?.id as number,
-            messageId: msg.message_id as number
-        })
         const chatId = msg.chat.id as number
         const msgText = msg.text as string
         const fromId = msg.from?.id as number
         const userFirstName = msg.from?.first_name as string
         const messageId = msg.message_id as number
-
+        //const chatId = store.get().chatId
+        dispatch('chatInfo/set/chatInfo', { chatId, fromId, messageId, })
         
-
         if (msgText === '/start') {
             return sendMessageSafe('Я - очередной бот написанный на Node.js ради развлечения и отправки всякой фигни. Чекай мои команды)')
         }

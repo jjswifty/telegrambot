@@ -81,7 +81,7 @@ export const removeMessages = async (messagesId: number[]) => {
     }
 }
 
-export const editBotMessage = async (messageId: number, text: string, reply_markup: InlineKeyboardMarkup | null = null) => {
+export const editMessage = async (messageId: number, text: string, reply_markup: InlineKeyboardMarkup | null) => {
     const chatId = store.get().chatId
     await bot.editMessageText(text, {
         chat_id: chatId,
