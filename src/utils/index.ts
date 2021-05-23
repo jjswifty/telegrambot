@@ -1,14 +1,15 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame, removeMessages, editMessage } from './messageUtils'
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, getNumberGame, removeMessages, editMessage } from './messageUtils'
 import { getRandomIntegerFromInterval } from './common'
-import { generateInlineKeyboardFilledWithNumbers } from './markupUtils'
+import { generateInlineKeyboardFilledWithNumbers, getInlineButton } from './markupUtils'
 
 export {
     sendMessageSafe,
     getPreparedWeatherInfo,
     sendDice,
-    sendNumberGame,
+    getNumberGame,
     generateInlineKeyboardFilledWithNumbers,
     getRandomIntegerFromInterval,
     removeMessages,
     editMessage,
+    getInlineButton,
 }

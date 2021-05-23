@@ -20,3 +20,5 @@ export const generateInlineKeyboardFilledWithNumbers = (buttonsInColumnLimit: nu
 export const getInlineButton = (text: string, callback_data: string) => JSON.stringify({
     inline_keyboard: [[ { text, callback_data } ]]
 }) as any
+
+//export const getNumberGameKeyboard = 

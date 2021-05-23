@@ -22,16 +22,16 @@ export const getPreparedWeatherInfo = () => {
     const weatherNow = store.get().weather
     const location = store.get().userLocation.location
 
-    return (!location || !weatherNow) ? 'Не смог определить температуру/местоположение. Проверь данные.' 
-    : (
-        "🏙️" + location + "\n" +
-        `
+    return (!location || !weatherNow) ? 'Не смог определить температуру/местоположение. Проверь данные.'
+        : (
+            "🏙️" + location + "\n" +
+            `
             Температура сейчас - ${weatherNow.temp}°, ${weatherNow.temp === weatherNow.feels_like ? '' : `ощущается как ${weatherNow.feels_like}°,`}
             погода - ${weatherNow.condition}, скорость ветра - ${weatherNow.wind_speed} м/c,
             текущие дата и время: ${new Date().toLocaleString()}, твой часовой пояс - ${weatherNow.tzinfo}.
         `
-        .replace(/\s+/g, ' ').trim()
-    )
+                .replace(/\s+/g, ' ').trim()
+        )
 }
 
 export const sendDice = async () => {
@@ -42,16 +42,15 @@ export const sendDice = async () => {
             inline_keyboard: [[
                 {
                     text: 'Подкинуть ещё раз.',
-                    callback_data: 'reroll_dice'            
-                }, 
+                    callback_data: 'reroll_dice'
+                },
             ]]
         }) as any
-    }) 
+    })
 }
 
-export const sendNumberGame = async () => {
+export const getNumberGame = () => {
     // TODO: Запилить рекорды
-    const chatId = store.get().chatId
     const dispatch = store.dispatch
 
     const numberKeyboard = generateInlineKeyboardFilledWithNumbers(3, 10, 'NumberGame')
@@ -66,11 +65,13 @@ export const sendNumberGame = async () => {
 
     numberKeyboard[randomNumberForColumn][randomNumberFromColumn].callback_data += 'right'
 
-    sendMessageSafe('Попробуй угадать число от 0 до 10! Каждый раз я загадываю новое.', {
+    return {
+        text: 'Попробуй угадать число от 0 до 10! Каждый раз я загадываю новое.',
+        conceivedNumber,
         reply_markup: JSON.stringify({
             inline_keyboard: numberKeyboard
         }) as any
-    })
+    }
 }
 
 export const removeMessages = async (messagesId: number[]) => {
@@ -81,7 +82,7 @@ export const removeMessages = async (messagesId: number[]) => {
     }
 }
 
-export const editMessage = async (messageId: number, text: string, reply_markup: InlineKeyboardMarkup | null) => {
+export const editMessage = async (messageId: number, text: string, reply_markup: any = null) => {
     const chatId = store.get().chatId
     await bot.editMessageText(text, {
         chat_id: chatId,

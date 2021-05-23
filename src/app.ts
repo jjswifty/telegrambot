@@ -1,4 +1,4 @@
-import { sendMessageSafe, getPreparedWeatherInfo, sendDice, sendNumberGame, generateInlineKeyboardFilledWithNumbers, editMessage, removeMessages } from './utils';
+import { sendMessageSafe, getPreparedWeatherInfo, sendDice, getNumberGame, generateInlineKeyboardFilledWithNumbers, editMessage, removeMessages, getInlineButton } from './utils';
 import { weatherApi, geocoderApi } from './api';
 import TelegramBotAPI from 'node-telegram-bot-api'
 import texts from './data/texts'
@@ -45,27 +45,18 @@ const start = () => {
         }
 
         if (msg.data?.match(/^ReplayNumberGame/)) {
-            //removeMessages([messageId, messageId - 2])
-            return sendNumberGame()
+            const { conceivedNumber, reply_markup, text } = getNumberGame()
+            dispatch('games/set/numberGameRandomNumber', { conceivedNumber })
+            return editMessage(messageId, text, reply_markup)
         }
 
         if (msg.data?.match(/^NumberGame/)) {
             const isNumberRight = !!msg.data.includes('right')
-            const replayButton = JSON.stringify({
-                inline_keyboard: [[
-                    {
-                        text: 'Еще раз?',
-                        callback_data: 'ReplayNumberGame'
-                    }
-                ]]
-            }) as any
-            //
-            // - removeMessages([messageId])
+            const replayButton = getInlineButton('Еще раз?', 'ReplayNumberGame')
+
             // + Редактируем текущее сообщение, изменяя markup на кнопку Еще раз, при нажатии на которую появится markup, и так по кругу
-            // - Удаляем сообщение, высвечиваем новое с результатом игры, и кнопкой Еще раз?, при нажатии на которую удалятся сообщение с предыдущей игрой
 
             if (isNumberRight) {
-                // - return bot.sendMessage(store.get().chatId, `✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, { reply_markup: replayButton })
                 return editMessage(messageId, `✅Верно! Загаданное число - ${store.get().conceivedNumber}.✅`, replayButton)
             }
             return editMessage(messageId, `❌Неверно! Я загадал ${store.get().conceivedNumber}.❌`, replayButton)
@@ -159,7 +150,11 @@ const start = () => {
         }
 
         if (msgText === '/numbergame') {
-            return sendNumberGame()
+            const { conceivedNumber, reply_markup, text } = getNumberGame()
+            dispatch('games/set/numberGameRandomNumber', { conceivedNumber })
+            return sendMessageSafe(text, {
+                reply_markup
+            })
         }
 
         return sendMessageSafe(Math.random() > 0.5 ?
